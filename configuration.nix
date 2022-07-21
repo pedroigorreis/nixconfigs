@@ -13,11 +13,6 @@
 			systemd-boot.enable = true;
 			efi.canTouchEfiVariables = true;
 		};
-		kernelParams =
-		[
-			"radeon.cik_support=0"
-			"amdgpu.cik_support=1"
-		];
 		initrd.kernelModules =
 		[
 			"amdgpu"
@@ -26,9 +21,16 @@
 
 	networking =
 	{
-		hostName = "Gigabyte";
+		useDHCP = false;
+		hostName = "Lenovo";
 		firewall.enable = true;
 		networkmanager.enable = true;
+		interfaces.wlp1s0.useDHCP = true;
+		nameservers = 
+		[ 
+			"1.1.1.1" 
+			"1.0.0.1" 
+		];
 	};
 
 	time.timeZone = "America/Sao_Paulo";
@@ -45,12 +47,13 @@
 
 	users.users.pedroigor =
 	{
-		isNormalUser = true;
 		extraGroups =
 		[
 			"wheel"
 			"networkmanager"
 		];
+		isNormalUser = true;
+		description = "Pedro Igor";
 	};
 
 	services =
@@ -65,26 +68,48 @@
 			];
 			desktopManager =
 			{
-				xterm.enable = false;
-				pantheon.enable = true;
+				plasma5.enable = true;
+			};
+			displayManager =
+			{
+				sddm =
+				{
+					enable = true;
+					autoNumlock = true;
+				};
 			};
 		};
-		pipewire.enable = true;
+		pipewire =
+		{
+			enable = true;
+			pulse.enable = true;
+		};
+		fwupd.enable = true;
 		printing.enable = true;
+		power-profiles-daemon.enable = true;
 	};
 
 	system =
 	{
-		stateVersion = "22.05";
+		stateVersion = "unstable";
 		autoUpgrade.enable = true;
 	};
 
-	environment.systemPackages = with pkgs;
+	environment.systemPackages = with pkgs; with libsForQt5;
 	[
+		ark
+		git
 		mpv
+		gcc
+		ccls
+		kate
 		nanorc
+		kwrited
 		firefox
-		transmission-gtk
+		ktorrent
+		cppcheck
+		linuxquota
+		kde-gtk-config
 		aspellDicts.pt_BR
 	];
 
@@ -99,7 +124,8 @@
 				rocm-opencl-runtime
 			];
 		};
-		pulseaudio.enable = true;
+		bluetooth.enable = true;
+		pulseaudio.enable = false;
 	};
 
 	fonts.fonts = with pkgs;
@@ -108,6 +134,12 @@
 		fira-code
 		fira-code-symbols
 	];
+
+	security =
+	{
+		rtkit.enable = true;
+		apparmor.enable = true;
+	};
 
 	nix.autoOptimiseStore = true;
 }
